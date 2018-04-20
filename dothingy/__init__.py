@@ -17,5 +17,26 @@ def build(project):
 
 
 @cli.command()
-def deploy():
-    click.echo('Dropped the database')
+@pass_project
+def deploy(project):
+    project.deploy()
+
+
+@cli.command()
+@click.option('--fix', is_flag=True,
+              help='Fix lint errors instead of reporting them')
+@pass_project
+def lint(project, fix):
+    project.lint(fix=fix)
+
+
+@cli.command()
+@pass_project
+def test(project):
+    project.test()
+
+
+@cli.command()
+@pass_project
+def check(project):
+    project.check()
