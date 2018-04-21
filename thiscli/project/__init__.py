@@ -123,7 +123,7 @@ class Project(ABC):
         return None
 
 
-def echo_command(cmd, cwd, env):
+def format_command(cmd, cwd, env):
     if isinstance(cmd, list):
         cmd = ' '.join(maybe_quote_arg(arg) for arg in cmd)
     if env is not None:
@@ -131,7 +131,12 @@ def echo_command(cmd, cwd, env):
                ' ' + cmd)
     if cwd is not None:
         cmd = 'cd {} && {}'.format(cwd, cmd)
-    click.secho('$ ' + cmd, fg='white', bold=True)
+    return cmd
+
+
+def echo_command(cmd, cwd, env):
+    click.secho('$ ' + format_command(cmd, cwd, env),
+                fg='white', bold=True)
 
 
 def maybe_quote_arg(arg):
