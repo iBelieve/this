@@ -48,11 +48,11 @@ class Project(ABC):
             else:
                 sys.exit(proc.returncode)
 
-    def path(self, path):
-        return os.path.join(self.cwd, path)
+    def path(self, *path):
+        return os.path.join(self.cwd, *path)
 
-    def exists(self, path):
-        return os.path.exists(self.path(path))
+    def exists(self, *path):
+        return os.path.exists(self.path(*path))
 
     def find_file(self, *paths):
         return next((path for path in paths if self.exists(path)), None)
