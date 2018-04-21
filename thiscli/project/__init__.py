@@ -101,6 +101,7 @@ class Project(ABC):
         from .make import MakeProject
         from .nodejs import NodejsProject
         from .python import PythonProject
+        from .cargo import CargoProject
         from .ansible import AnsibleProject
 
         project = Project.find_one_of(AutotoolsProject,
@@ -109,6 +110,7 @@ class Project(ABC):
                                       MakeProject,
                                       NodejsProject,
                                       PythonProject,
+                                      CargoProject,
                                       AnsibleProject)
 
         if project is None:
