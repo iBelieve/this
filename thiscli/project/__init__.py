@@ -98,6 +98,7 @@ class Project(ABC):
         from .autotools import AutotoolsProject
         from .meson import MesonProject
         from .cmake import CMakeProject
+        from .make import MakeProject
         from .nodejs import NodejsProject
         from .python import PythonProject
         from .ansible import AnsibleProject
@@ -105,6 +106,7 @@ class Project(ABC):
         project = Project.find_one_of(AutotoolsProject,
                                       MesonProject,
                                       CMakeProject,
+                                      MakeProject,
                                       NodejsProject,
                                       PythonProject,
                                       AnsibleProject)
