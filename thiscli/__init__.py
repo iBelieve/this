@@ -1,3 +1,5 @@
+"""Universal do-thingy for running common project tasks"""
+
 import click
 from .project import Project
 

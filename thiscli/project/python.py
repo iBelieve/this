@@ -48,7 +48,7 @@ class PythonSetupProject(PythonProject):
 class PythonPipenvProject(PythonProject):
     @classmethod
     def find(cls):
-        return cls.find_containing('Pipenv')
+        return cls.find_containing('Pipfile')
 
     def build(self):
         return super().build()

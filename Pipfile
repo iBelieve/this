@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+click = "*"
+colorama = "*"
+setuptools = ">=38.6.0"
+
+[dev-packages]
+pylint = "*"
+flake8 = "*"
+twine = ">=1.11.0rc1"

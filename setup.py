@@ -1,17 +1,30 @@
 from setuptools import setup, find_packages
 
+with open('README.md') as f:
+    long_description = f.read()
+
 setup(
-    name='dothingy',
+    name='this-cli',
     version='0.1',
+    description='Universal do-thingy for running common project tasks',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    author='Michael Spencer',
+    author_email='sonrisesoftware@gmail.com',
+    url='https://github.com/ibelieve/this',
+    license='MIT',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
         'Click',
     ],
-    setup_requires=['pytest-runner'],
+    setup_requires=[
+        'setuptools>=38.6.0',
+        'pytest-runner'
+    ],
     tests_require=['pytest'],
     entry_points='''
         [console_scripts]
-        this=dothingy:cli
+        this=thiscli:cli
     ''',
 )
