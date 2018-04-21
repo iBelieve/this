@@ -1,7 +1,7 @@
 import os
 
 from . import Project
-from ..util import has_command
+from ..util import has_command, fail
 
 
 class CMakeProject(Project):
@@ -28,7 +28,7 @@ class CMakeProject(Project):
         elif self.exists('build', 'build.ninja'):
             self.cmd('ninja -C build ' + target)
         else:
-            self.fail("Sorry! I don't know what build tool CMake is using")
+            fail("Sorry! I don't know what build tool CMake is using")
 
     def build(self):
         self.target()

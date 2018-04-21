@@ -17,6 +17,7 @@ def get_env(name):
             return env
     return None
 
+
 def short_env_name(name):
     env = get_env(name)
     return env.short if env else None

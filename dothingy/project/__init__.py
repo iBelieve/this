@@ -13,11 +13,14 @@ local = threading.local()
 
 @contextmanager
 def delayed_exit():
-    local.exit_code = 0
+    already_delayed = hasattr(local, 'exit_code')
+    if not already_delayed:
+        local.exit_code = 0
     yield
-    if local.exit_code != 0:
-        sys.exit(local.exit_code)
-    delattr(local, 'exit_code')
+    if not already_delayed:
+        if local.exit_code != 0:
+            sys.exit(local.exit_code)
+        delattr(local, 'exit_code')
 
 
 class Project(ABC):
@@ -54,8 +57,13 @@ class Project(ABC):
     def has_action(self, action):
         return getattr(type(self), action) != getattr(Project, action)
 
+    @abstractmethod
     def build(self):
         fail("Sorry! I don't know how to build your project")
+
+    @abstractmethod
+    def test(self):
+        fail("Sorry! I don't know how to test your project")
 
     def run(self, env):
         fail("Sorry! I don't know how to run your project")
@@ -66,12 +74,9 @@ class Project(ABC):
     def lint(self, fix):
         fail("Sorry! I don't know how to lint your project")
 
-    def test(self):
-        fail("Sorry! I don't know how to test your project")
-
     def check(self):
         if not (self.has_action('lint') or self.has_action('test')):
-            self.fail("Sorry! I don't know how to check your project")
+            fail("Sorry! I don't know how to check your project")
 
         with delayed_exit():
             if self.has_action('lint'):
