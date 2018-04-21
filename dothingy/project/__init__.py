@@ -6,7 +6,7 @@ import sys
 import threading
 import click
 
-from ..util import walk_up
+from ..util import walk_up, fail
 
 local = threading.local()
 
@@ -25,6 +25,8 @@ class Project(ABC):
         self.cwd = cwd
 
     def cmd(self, cmd, cwd=None, env=None, echo=True, shell=None):
+        if isinstance(cmd, str):
+            cmd = cmd.strip()
         if echo:
             echo_command(cmd, cwd, env)
         if cwd is not None:
@@ -52,21 +54,17 @@ class Project(ABC):
     def has_action(self, action):
         return getattr(type(self), action) != getattr(Project, action)
 
-    def fail(self, message):
-        click.echo(message)
-        sys.exit(1)
-
     def build(self):
-        self.fail("Sorry! I don't know how to build your project")
+        fail("Sorry! I don't know how to build your project")
 
     def deploy(self):
-        self.fail("Sorry! I don't know how to deploy your project")
+        fail("Sorry! I don't know how to deploy your project")
 
     def lint(self, fix):
-        self.fail("Sorry! I don't know how to lint your project")
+        fail("Sorry! I don't know how to lint your project")
 
     def test(self):
-        self.fail("Sorry! I don't know how to test your project")
+        fail("Sorry! I don't know how to test your project")
 
     def check(self):
         if not (self.has_action('lint') or self.has_action('test')):
@@ -83,10 +81,14 @@ class Project(ABC):
     def find(cls):
         from .autotools import AutotoolsProject
         from .meson import MesonProject
+        from .cmake import CMakeProject
+        from .nodejs import NodejsProject
         from .python import PythonProject
 
         project = Project.find_one_of(AutotoolsProject,
                                       MesonProject,
+                                      CMakeProject,
+                                      NodejsProject,
                                       PythonProject)
 
         if project is None:

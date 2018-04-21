@@ -1,5 +1,7 @@
 import os
-import os.path
+import shutil
+import sys
+import click
 
 
 def walk_up(bottom):
@@ -18,3 +20,27 @@ def walk_up(bottom):
         if new_path == bottom:
             return
         bottom = new_path
+
+
+def has_command(cmd):
+    return shutil.which(cmd) is not None
+
+
+def needs_update(src, dest):
+    if not os.path.exists(dest):
+        return True
+    return os.path.getmtime(src) > os.path.getmtime(dest)
+
+
+def fail(message):
+    click.echo(message)
+    sys.exit(1)
+
+
+def fatal(message):
+    click.secho('ERROR: ' + message, fg='red', bold=True)
+    sys.exit(1)
+
+
+def warn(message):
+    click.secho('WARNING: ' + message, fg='yellow', bold=True)
