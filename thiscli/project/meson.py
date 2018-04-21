@@ -9,7 +9,7 @@ class MesonProject(Project):
         return cls.find_containing('meson.build')
 
     def ensure_builddir(self):
-        if self.exists('build', 'build.ninja'):
+        if self.exists('build/build.ninja'):
             return
 
         os.makedirs('build', exist_ok=True)

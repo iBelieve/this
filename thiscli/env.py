@@ -10,6 +10,9 @@ ENVIRONMENTS = [
     Env('testing', 'test', ['qa'])
 ]
 
+STANDARD_ENV_NAMES = [env.name for env in ENVIRONMENTS]
+SHORT_ENV_NAMES = [env.short for env in ENVIRONMENTS]
+
 
 def get_env(name):
     for env in ENVIRONMENTS:
@@ -20,4 +23,12 @@ def get_env(name):
 
 def short_env_name(name):
     env = get_env(name)
-    return env.short if env else None
+    return env.short if env else name
+
+
+def all_env_names(name):
+    env = get_env(name)
+    if env:
+        return set([env.name, env.short, *env.other])
+    else:
+        return set(name)

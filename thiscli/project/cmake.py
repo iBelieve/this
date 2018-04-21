@@ -10,8 +10,8 @@ class CMakeProject(Project):
         return cls.find_containing('CMakeLists.txt')
 
     def ensure_builddir(self):
-        if (self.exists('build', 'Makefile') or
-                self.exists('build', 'build.ninja')):
+        if (self.exists('build/Makefile') or
+                self.exists('build/build.ninja')):
             return
 
         os.makedirs('build', exist_ok=True)
@@ -23,9 +23,9 @@ class CMakeProject(Project):
 
     def target(self, target=''):
         self.ensure_builddir()
-        if self.exists('build', 'Makefile'):
+        if self.exists('build/Makefile'):
             self.cmd('make ' + target, cwd='build')
-        elif self.exists('build', 'build.ninja'):
+        elif self.exists('build/build.ninja'):
             self.cmd('ninja -C build ' + target)
         else:
             fail("Sorry! I don't know what build tool CMake is using")

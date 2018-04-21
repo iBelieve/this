@@ -37,7 +37,9 @@ def fail(message):
     sys.exit(1)
 
 
-def fatal(message):
+def fatal(message, *args, **kwargs):
+    if args or kwargs:
+        message = message.format(*args, **kwargs)
     click.secho('ERROR: ' + message, fg='red', bold=True)
     sys.exit(1)
 

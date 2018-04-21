@@ -48,11 +48,14 @@ class Project(ABC):
             else:
                 sys.exit(proc.returncode)
 
-    def path(self, *path):
-        return os.path.join(self.cwd, *path)
+    def path(self, path):
+        return os.path.join(self.cwd, path)
 
-    def exists(self, *path):
-        return os.path.exists(self.path(*path))
+    def exists(self, path):
+        return os.path.exists(self.path(path))
+
+    def find_file(self, *paths):
+        return next((path for path in paths if self.exists(path)), None)
 
     def has_action(self, action):
         return getattr(type(self), action) != getattr(Project, action)
@@ -68,8 +71,13 @@ class Project(ABC):
     def run(self, env):
         fail("Sorry! I don't know how to run your project")
 
-    def deploy(self):
-        fail("Sorry! I don't know how to deploy your project")
+    def deploy(self, env):
+        from . import ansible
+
+        if ansible.is_present(self):
+            ansible.deploy(self, env)
+        else:
+            fail("Sorry! I don't know how to deploy your project")
 
     def lint(self, fix):
         fail("Sorry! I don't know how to lint your project")
@@ -92,12 +100,14 @@ class Project(ABC):
         from .cmake import CMakeProject
         from .nodejs import NodejsProject
         from .python import PythonProject
+        from .ansible import AnsibleProject
 
         project = Project.find_one_of(AutotoolsProject,
                                       MesonProject,
                                       CMakeProject,
                                       NodejsProject,
-                                      PythonProject)
+                                      PythonProject,
+                                      AnsibleProject)
 
         if project is None:
             print("Sorry! I don't recognize your project type")
