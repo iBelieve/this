@@ -2,6 +2,7 @@ import json
 import os
 
 from . import Project
+from ..env import short_env_name
 from ..util import needs_update, has_command, warn, fatal
 
 
@@ -52,15 +53,24 @@ class NodejsProject(Project):
     def has_script(self, script):
         return script in self.package.get('scripts', {})
 
-    def npm_script(self, scripts, *args):
-        args = list(args)
-        if args and self.npm_cmd == 'npm':
-            args = ['--'] + args
+    def find_script(self, scripts, env):
         if not isinstance(scripts, list):
             scripts = [scripts]
 
-        script = next((script for script in scripts
-                       if self.has_script(script)), None)
+        for script in scripts:
+            env_script = script + ':' + short_env_name(env or 'dev')
+            if self.has_script(env_script):
+                return env_script
+            if self.has_script(script):
+                return script
+        return None
+
+    def npm_script(self, scripts, *args, env=None):
+        args = list(args)
+        if args and self.npm_cmd == 'npm':
+            args = ['--'] + args
+        script = self.find_script(scripts, env)
+
         if script is None:
             fatal("NPM script not found. Looked for: " + ' '.join(scripts))
         self.ensure_deps()
@@ -68,6 +78,9 @@ class NodejsProject(Project):
 
     def build(self):
         self.npm_script('build')
+
+    def run(self, env):
+        self.npm_script(['watch', 'start'], env=env)
 
     def test(self):
         self.npm_script('test')

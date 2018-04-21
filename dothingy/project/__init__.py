@@ -57,6 +57,9 @@ class Project(ABC):
     def build(self):
         fail("Sorry! I don't know how to build your project")
 
+    def run(self, env):
+        fail("Sorry! I don't know how to run your project")
+
     def deploy(self):
         fail("Sorry! I don't know how to deploy your project")
 
