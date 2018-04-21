@@ -1,5 +1,10 @@
 # This - Universal do-thingy
 
+[![Travis branch](https://img.shields.io/travis/iBelieve/this/master.svg?style=for-the-badge)](https://travis-ci.org/iBelieve/this)
+[![PyPI](https://img.shields.io/pypi/v/this-cli.svg?style=for-the-badge)](https://pypi.org/project/this-cli/)
+[![PyPI - License](https://img.shields.io/pypi/l/this-cli.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Maintenance](https://img.shields.io/maintenance/yes/2018.svg?style=for-the-badge)]()
+
 `this` provides a standardized and simplified interface for running
 many common project tasks, such as building, running, testing, and
 deploying. It supports many project types, including Node.js, Python,
