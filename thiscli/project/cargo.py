@@ -2,6 +2,8 @@ from . import Project
 
 
 class CargoProject(Project):
+    description = 'Rust project using Cargo'
+
     @classmethod
     def find(cls):
         return cls.find_containing('Cargo.toml')

@@ -30,11 +30,24 @@ def get_npm_cmd(path):
 
 
 class NodejsProject(Project):
+    description = 'Node.js project'
+
     def __init__(self, cwd):
         super().__init__(cwd)
         with open('package.json') as f:
             self.package = json.load(f)
         self.npm_cmd = get_npm_cmd(self.cwd)
+
+        if self.npm_cmd == 'yarn':
+            self.description += ' using Yarn'
+        else:
+            self.description += ' using npm'
+
+        self.can_build = self.find_script('build', None) is not None
+        self.can_run = self.find_script(['watch', 'start', 'serve'],
+                                        None) is not None
+        self.can_test = self.find_script('test', None) is not None
+        self.can_lint = self.find_script('lint', None) is not None
 
     @classmethod
     def find(cls):
@@ -80,7 +93,7 @@ class NodejsProject(Project):
         self.npm_script('build')
 
     def run(self, env):
-        self.npm_script(['watch', 'start'], env=env)
+        self.npm_script(['watch', 'start', 'serve'], env=env)
 
     def test(self):
         self.npm_script('test')

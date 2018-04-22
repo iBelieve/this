@@ -7,15 +7,14 @@ GENERIC_INVENTORY_FILENAMES = ['ansible/hosts',
 
 
 class AnsibleProject(Project):
+    description = 'Ansible project'
+
     @classmethod
     def find(cls):
         return cls.find_containing("ansible")
 
-    def build(self):
-        super().build()
-
-    def test(self):
-        super().test()
+    def deploy(self, env):
+        deploy(self, env)
 
 
 def install_roles(project):

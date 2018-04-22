@@ -5,6 +5,16 @@ from ..util import has_command, fail
 
 
 class CMakeProject(Project):
+    description = 'CMake project'
+
+    def __init__(self, cwd):
+        super().__init__(cwd)
+
+        if self.exists('build/Makefile'):
+            self.description += ' using make'
+        elif self.exists('build/build.ninja'):
+            self.description += ' using ninja'
+
     @classmethod
     def find(cls):
         return cls.find_containing('CMakeLists.txt')

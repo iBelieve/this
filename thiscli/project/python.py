@@ -6,6 +6,8 @@ from ..util import fatal
 
 
 class PythonProject(Project, ABC):
+    description = 'Python project'
+
     def __init__(self, cwd):
         super().__init__(cwd)
         self.packages = [dirname for dirname in os.listdir(cwd)
@@ -29,6 +31,8 @@ class PythonProject(Project, ABC):
 
 
 class PythonSetupProject(PythonProject):
+    description = 'Python project using setup.py'
+
     @classmethod
     def find(cls):
         return cls.find_containing('setup.py')
@@ -46,12 +50,8 @@ class PythonSetupProject(PythonProject):
 
 
 class PythonPipenvProject(PythonProject):
+    description = 'Python project using Pipenv'
+
     @classmethod
     def find(cls):
         return cls.find_containing('Pipfile')
-
-    def build(self):
-        return super().build()
-
-    def test(self):
-        return super().test()

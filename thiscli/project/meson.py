@@ -4,6 +4,8 @@ from . import Project
 
 
 class MesonProject(Project):
+    description = 'Meson project'
+
     @classmethod
     def find(cls):
         return cls.find_containing('meson.build')

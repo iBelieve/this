@@ -2,6 +2,8 @@ from . import Project
 
 
 class AutotoolsProject(Project):
+    description = 'Autotools project'
+
     @classmethod
     def find(cls):
         return cls.find_containing('configure.ac')

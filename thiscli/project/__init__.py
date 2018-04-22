@@ -62,13 +62,47 @@ class Project(ABC):
         return next((path for path in paths if self.exists(path)), None)
 
     def has_action(self, action):
-        return getattr(type(self), action) != getattr(Project, action)
+        if isinstance(action, str):
+            action_name = action
+            action = getattr(type(self), action)
+        else:
+            action_name = action.__name__
+            action = action.__func__
+        default_action = getattr(Project, action_name)
 
+        if hasattr(self, 'can_' + action_name):
+            return getattr(self, 'can_' + action_name)
+        else:
+            return action != default_action
+
+    @property
+    def actions(self):
+        all_actions = [self.build, self.test, self.run, self.deploy,
+                       self.lint, self.check]
+
+        return [action.__name__ for action in all_actions
+                if self.has_action(action)]
+
+    def info(self):
+        from . import ansible
+        description = self.description
+        if self.deploy.__func__ == Project.deploy and ansible.is_present(self):
+            description += ' (deployed using Ansible)'
+        click.secho(description, fg='blue', bold=True)
+        click.echo()
+
+        click.secho('Available commands:', fg='white', bold=True)
+        for action in self.actions:
+            print('  ' + action)
+
+    @property
     @abstractmethod
+    def description(self):
+        pass
+
     def build(self):
         fail("Sorry! I don't know how to build your project")
 
-    @abstractmethod
     def test(self):
         fail("Sorry! I don't know how to test your project")
 
@@ -83,6 +117,11 @@ class Project(ABC):
         else:
             fail("Sorry! I don't know how to deploy your project")
 
+    @property
+    def can_deploy(self):
+        from . import ansible
+        return ansible.is_present(self)
+
     def lint(self, fix):
         fail("Sorry! I don't know how to lint your project")
 
@@ -95,6 +134,10 @@ class Project(ABC):
                 self.lint(fix=False)
             if self.has_action('test'):
                 self.test()
+
+    @property
+    def can_check(self):
+        return self.has_action('lint') or self.has_action('test')
 
     @classmethod
     @abstractmethod
