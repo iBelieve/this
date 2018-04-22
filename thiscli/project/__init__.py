@@ -77,8 +77,8 @@ class Project(ABC):
 
     @property
     def actions(self):
-        all_actions = [self.build, self.test, self.run, self.deploy,
-                       self.lint, self.check]
+        all_actions = [self.build, self.lint, self.test, self.check,
+                       self.run, self.deploy]
 
         return [action.__name__ for action in all_actions
                 if self.has_action(action)]

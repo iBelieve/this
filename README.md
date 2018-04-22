@@ -18,14 +18,38 @@ autotools-based project will run `./autogen.sh`, `./configure`, then
 `make`, while a meson-based project will run `meson` and then `ninja`
 in the build directory.
 
-### Installation
+### Installation and Usage
 
-    pip install this-cli
+`this` is currently available via pip3 (Python 3-only):
+
+    pip3 install this-cli
+
+To use on a project, you can directly invoke `this` with one of the commands
+listed below, or run `this` with no arguments to see what project type
+is detected and what subset of the commands are available:
+
+    > this
+	Node.js project using Yarn (deployed using Ansible)
+
+	Available commands:
+	  build
+	  lint
+	  test
+	  check
+	  run
+	  deploy
+
+To see what steps `this` will run for a given command, use the `--dry-run` flag:
+
+    > this --dry-run deploy
+	$ ansible-galaxy install -r ansible/requirements.yml
+	$ ansible-playbook -i ansible/inventory ansible/playbook.yml
 
 ### Supported Project Formats
 
  - Autotools
  - CMake
+ - Makefile
  - Meson
  - Node.js
  - Python
