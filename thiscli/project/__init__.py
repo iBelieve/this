@@ -26,12 +26,16 @@ def delayed_exit():
 class Project(ABC):
     def __init__(self, cwd):
         self.cwd = cwd
+        self.dry_run = False
 
     def cmd(self, cmd, cwd=None, env=None, echo=True, shell=None):
         if isinstance(cmd, str):
             cmd = cmd.strip()
         if echo:
             echo_command(cmd, cwd, env)
+        if self.dry_run:
+            return
+
         if cwd is not None:
             cwd = self.path(cwd)
         else:

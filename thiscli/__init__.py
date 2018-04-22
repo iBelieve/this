@@ -7,9 +7,13 @@ pass_project = click.make_pass_decorator(Project)
 
 
 @click.group()
+@click.option('--dry-run', is_flag=True,
+              help='show what commands would be run without ' +
+              'actually running them')
 @click.pass_context
-def cli(ctx):
+def cli(ctx, dry_run):
     ctx.obj = Project.find()
+    ctx.obj.dry_run = dry_run
 
 
 @cli.command()
