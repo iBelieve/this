@@ -6,7 +6,7 @@ from ..util import fatal
 
 
 class PythonProject(Project, ABC):
-    description = 'Python project'
+    _description = 'Python project'
 
     def __init__(self, cwd):
         super().__init__(cwd)
@@ -14,11 +14,36 @@ class PythonProject(Project, ABC):
                          if self.exists(dirname, '__init__.py')]
         if not self.packages:
             fatal("No python packages containing __init__.py found")
+        self.can_build = self.can_test = self.exists('setup.py')
 
     @classmethod
     def find(cls):
-        return Project.find_one_of(PythonSetupProject,
-                                   PythonPipenvProject)
+        return Project.find_one_of(PythonPipenvProject,
+                                   PythonPipToolsProject,
+                                   PythonRequirementsProject,
+                                   PythonSetupProject)
+
+    @property
+    def description(self):
+        description = self._description
+        if self.exists('setup.py'):
+            if 'using' in description:
+                description += ' and setup.py'
+            else:
+                description += ' using setup.py'
+        return description
+
+    def build(self):
+        if self.exists('setup.py'):
+            self.cmd('python setup.py build')
+        else:
+            super().build()
+
+    def test(self):
+        if self.exists('setup.py'):
+            self.cmd('python setup.py test')
+        else:
+            super().test()
 
     def lint(self, fix):
         if fix:
@@ -26,32 +51,38 @@ class PythonProject(Project, ABC):
                      ' '.join(self.packages))
         with delayed_exit():
             self.cmd('flake8 ' + ' '.join(self.packages))
-            for package in self.packages:
-                self.cmd(f'pylint {package}')
-
-
-class PythonSetupProject(PythonProject):
-    description = 'Python project using setup.py'
-
-    @classmethod
-    def find(cls):
-        return cls.find_containing('setup.py')
-
-    def build(self):
-        self.cmd('python setup.py build')
-
-    def test(self):
-        self.cmd('python setup.py test')
-
-    def lint(self, fix):
-        with delayed_exit():
-            super().lint(fix)
-        self.cmd('python setup.py check')
+            self.cmd('pylint ' + ' '.join(self.packages))
+            if self.exists('setup.py'):
+                self.cmd('python setup.py check')
 
 
 class PythonPipenvProject(PythonProject):
-    description = 'Python project using Pipenv'
+    _description = 'Python project using Pipenv'
 
     @classmethod
     def find(cls):
         return cls.find_containing('Pipfile')
+
+
+class PythonPipToolsProject(PythonProject):
+    _description = 'Python project using pip-tools'
+
+    @classmethod
+    def find(cls):
+        return cls.find_containing('requirements.in')
+
+
+class PythonRequirementsProject(PythonProject):
+    _description = 'Python project using requirements.txt'
+
+    @classmethod
+    def find(cls):
+        return cls.find_containing('requirements.txt')
+
+
+class PythonSetupProject(PythonProject):
+    _description = 'Python project'
+
+    @classmethod
+    def find(cls):
+        return cls.find_containing('setup.py')
