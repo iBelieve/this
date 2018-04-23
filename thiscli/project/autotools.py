@@ -22,7 +22,8 @@ class AutotoolsProject(Project):
 
         self.cmd('./configure')
 
-    def build(self):
+    def build(self, env):
+        # TODO: Configure release/debug build from env
         self.ensure_makefile()
         self.cmd('make')
 

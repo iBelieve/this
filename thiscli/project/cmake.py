@@ -40,7 +40,8 @@ class CMakeProject(Project):
         else:
             fail("Sorry! I don't know what build tool CMake is using")
 
-    def build(self):
+    def build(self, env):
+        # TODO: Set -DCMAKE_BUILD_TYPE=Release/Debug based on env
         self.target()
 
     def test(self):

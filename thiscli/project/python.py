@@ -94,7 +94,7 @@ class PythonProject(Project):
         else:
             return False
 
-    def build(self):
+    def build(self, env):
         if self.has_setup:
             self.cmd('python setup.py build')
         else:

@@ -21,7 +21,7 @@ def test_find_python_project(python_project):
 
 def test_build_python_project(python_project):
     with runs_commands('python setup.py build'):
-        python_project.build()
+        python_project.build(env=None)
 
 
 def test_test_python_project(python_project):

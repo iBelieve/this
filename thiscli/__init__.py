@@ -20,16 +20,22 @@ def cli(ctx, dry_run):
 
 
 @cli.command()
+@click.option('--production', '--prod', '--release', 'env',
+              flag_value='production')
+@click.option('--development', '--dev', '--debug', 'env',
+              flag_value='development')
 @pass_project
-def build(project):
-    project.build()
+def build(project, env):
+    project.build(env)
 
 
 @cli.command()
 @click.option('--env', metavar='ENV',
               help='staging/production/development/etc')
-@click.option('--production', '--prod', '--release', 'env', flag_value='production')
-@click.option('--development', '--dev', '--debug', 'env', flag_value='development')
+@click.option('--production', '--prod', '--release', 'env',
+              flag_value='production')
+@click.option('--development', '--dev', '--debug', 'env',
+              flag_value='development')
 @pass_project
 def run(project, env):
     project.run(env)

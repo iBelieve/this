@@ -91,8 +91,8 @@ class NodejsProject(Project):
         self.ensure_deps()
         self.npm(['run', script] + args)
 
-    def build(self):
-        self.npm_script('build')
+    def build(self, env):
+        self.npm_script('build', env=env)
 
     def run(self, env):
         self.npm_script(['watch', 'start', 'serve'], env=env)

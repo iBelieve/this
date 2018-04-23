@@ -18,7 +18,8 @@ class MesonProject(Project):
 
         self.cmd('meson setup build --prefix=$HOME/.local')
 
-    def build(self):
+    def build(self, env):
+        # TODO: Configure release/debug build from env
         self.ensure_builddir()
         self.cmd('ninja -C build')
 

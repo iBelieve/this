@@ -103,7 +103,7 @@ class Project(ABC):
     def description(self):
         pass
 
-    def build(self):
+    def build(self, env):
         fail("Sorry! I don't know how to build your project")
 
     def test(self):

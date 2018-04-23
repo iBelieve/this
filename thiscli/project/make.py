@@ -34,7 +34,8 @@ class MakeProject(Project):
                   ' '.join(targets))
         self.cmd("make " + target)
 
-    def build(self):
+    def build(self, env):
+        # TODO: Configure release/debug build from env
         self.target()
 
     def test(self):

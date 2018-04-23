@@ -9,8 +9,11 @@ class CargoProject(Project):
     def find(cls):
         return cls.find_containing('Cargo.toml')
 
-    def build(self):
-        self.cmd("cargo build")
+    def build(self, env):
+        if is_env_release(env):
+            self.cmd("cargo build --release")
+        else:
+            self.cmd("cargo build")
 
     def test(self):
         self.cmd("cargo test")
