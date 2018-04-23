@@ -5,27 +5,55 @@ from . import Project, delayed_exit
 from ..util import fatal
 
 
-class PythonProject(Project, ABC):
-    _description = 'Python project'
+class PythonEnv:
+    pass
 
+
+class PythonPipenv(PythonEnv):
+    description = 'Pipenv'
+
+
+class PythonPipTools(PythonEnv):
+    description = 'requirements.txt'
+
+
+class PythonRequirements(PythonEnv):
+    description = 'requirements.txt'
+
+
+class PythonProject(Project, ABC):
     def __init__(self, cwd):
         super().__init__(cwd)
+
         self.packages = [dirname for dirname in os.listdir(cwd)
                          if self.exists(dirname, '__init__.py')]
         if not self.packages:
             fatal("No python packages containing __init__.py found")
+
+        if self.exists('Pipfile'):
+            self.env = PythonPipenv()
+        elif self.exists('requirements.in'):
+            self.env = PythonPipTools()
+        elif self.exists('requirements.txt'):
+            self.env = PythonRequirements()
+        else:
+            self.env = None
+
         self.can_build = self.can_test = self.exists('setup.py')
 
     @classmethod
     def find(cls):
-        return Project.find_one_of(PythonPipenvProject,
-                                   PythonPipToolsProject,
-                                   PythonRequirementsProject,
-                                   PythonSetupProject)
+        return cls.find_containing('setup.py',
+                                   'requirements.txt',
+                                   'requirements.in',
+                                   'Pipenv')
 
     @property
     def description(self):
-        description = self._description
+        description = 'Python project'
+        if self.env:
+            description += ' using ' + self.env.description
+
         if self.exists('setup.py'):
             if 'using' in description:
                 description += ' and setup.py'
@@ -54,35 +82,3 @@ class PythonProject(Project, ABC):
             self.cmd('pylint ' + ' '.join(self.packages))
             if self.exists('setup.py'):
                 self.cmd('python setup.py check')
-
-
-class PythonPipenvProject(PythonProject):
-    _description = 'Python project using Pipenv'
-
-    @classmethod
-    def find(cls):
-        return cls.find_containing('Pipfile')
-
-
-class PythonPipToolsProject(PythonProject):
-    _description = 'Python project using pip-tools'
-
-    @classmethod
-    def find(cls):
-        return cls.find_containing('requirements.in')
-
-
-class PythonRequirementsProject(PythonProject):
-    _description = 'Python project using requirements.txt'
-
-    @classmethod
-    def find(cls):
-        return cls.find_containing('requirements.txt')
-
-
-class PythonSetupProject(PythonProject):
-    _description = 'Python project'
-
-    @classmethod
-    def find(cls):
-        return cls.find_containing('setup.py')
