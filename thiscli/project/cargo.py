@@ -1,4 +1,5 @@
 from . import Project
+from ..env import is_env_release
 
 
 class CargoProject(Project):
@@ -13,3 +14,9 @@ class CargoProject(Project):
 
     def test(self):
         self.cmd("cargo test")
+
+    def run(self, env):
+        if is_env_release(env):
+            self.cmd("cargo run --release")
+        else:
+            self.cmd("cargo run")

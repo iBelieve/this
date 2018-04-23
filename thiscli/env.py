@@ -1,12 +1,12 @@
 from collections import namedtuple
-
+from .util import fatal
 
 Env = namedtuple('Env', ['name', 'short', 'other'])
 
 ENVIRONMENTS = [
-    Env('development', 'dev', []),
+    Env('development', 'dev', ['debug']),
     Env('staging', 'staging', ['stage']),
-    Env('production', 'prod', []),
+    Env('production', 'prod', ['release']),
     Env('testing', 'test', ['qa'])
 ]
 
@@ -24,6 +24,20 @@ def get_env(name):
 def short_env_name(name):
     env = get_env(name)
     return env.short if env else name
+
+
+def env_to_release_or_debug(name):
+    if name in ['release', 'production', 'prod']:
+        return 'release'
+    elif name in ['debug', 'development', 'dev']:
+        return 'debug'
+
+    fatal('Unsupport --env value. Please use --release/--debug or ' +
+          'one of the equivalent aliases.')
+
+
+def is_env_release(name):
+    return env_to_release_or_debug(name) == 'release'
 
 
 def all_env_names(name):
