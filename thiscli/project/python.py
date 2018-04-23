@@ -66,6 +66,7 @@ class PythonProject(Project):
 
         self.can_build = self.has_setup
         self.can_test = self.has_setup or self.has_package('pytest')
+        self.can_deploy = self.has_setup or self.can_deploy
 
     @classmethod
     def find(cls):
@@ -106,6 +107,12 @@ class PythonProject(Project):
             self.cmd('pytest')
         else:
             super().test()
+
+    def deploy(self, env):
+        if self.has_setup:
+            self.cmd('python setup.py sdist upload')
+        else:
+            super().deploy()
 
     def lint(self, fix):
         if fix:

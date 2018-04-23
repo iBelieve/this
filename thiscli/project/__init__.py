@@ -28,6 +28,9 @@ class Project(ABC):
         self.cwd = cwd
         self.dry_run = False
 
+        from . import ansible
+        self.can_deploy = ansible.is_present(self)
+
     def cmd(self, cmd, cwd=None, env=None, echo=True, shell=None):
         if isinstance(cmd, str):
             cmd = cmd.strip()
@@ -116,11 +119,6 @@ class Project(ABC):
             ansible.deploy(self, env)
         else:
             fail("Sorry! I don't know how to deploy your project")
-
-    @property
-    def can_deploy(self):
-        from . import ansible
-        return ansible.is_present(self)
 
     def lint(self, fix):
         fail("Sorry! I don't know how to lint your project")

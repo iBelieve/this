@@ -48,6 +48,8 @@ class NodejsProject(Project):
                                         None) is not None
         self.can_test = self.find_script('test', None) is not None
         self.can_lint = self.find_script('lint', None) is not None
+        self.can_deploy = (self.find_script('deploy', None) is not None or
+                           self.can_deploy)
 
     @classmethod
     def find(cls):
@@ -103,3 +105,9 @@ class NodejsProject(Project):
             self.npm_script('lint', '--fix')
         else:
             self.npm_script('lint')
+
+    def deploy(self, env):
+        if self.find_script('deploy', env) is not None:
+            self.npm_script('deploy', env=env)
+        else:
+            super().deploy()
