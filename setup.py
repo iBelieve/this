@@ -6,7 +6,7 @@ with open('README.md') as f:
 setup(
     name='this-cli',
     version='0.1',
-    description='Universal do-thingy for running common project tasks',
+    description='Standardized project tool for running common tasks',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Michael Spencer',
