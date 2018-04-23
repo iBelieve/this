@@ -13,3 +13,6 @@ class CargoProject(Project):
 
     def test(self):
         self.cmd("cargo test")
+
+    def run(self, env):
+        self.cmd("cargo run", env=env)
