@@ -4,6 +4,7 @@ import subprocess
 import os
 import sys
 import threading
+import fnmatch
 import click
 
 from ..util import walk_up, fail
@@ -44,6 +45,7 @@ class Project(ABC):
         from .python import PythonProject
         from .cargo import CargoProject
         from .ansible import AnsibleProject
+        from .dotnet import DotnetCoreProject
 
         project = Project.find_one_of(AutotoolsProject,
                                       MesonProject,
@@ -52,6 +54,7 @@ class Project(ABC):
                                       NodejsProject,
                                       PythonProject,
                                       CargoProject,
+                                      DotnetCoreProject,
                                       AnsibleProject)
 
         if project is None:
@@ -63,7 +66,7 @@ class Project(ABC):
     @classmethod
     def find_containing(cls, *filenames):
         for root, files in walk_up(os.getcwd()):
-            if any(filename in files for filename in filenames):
+            if any(fnmatch.filter(files, filename) for filename in filenames):
                 return cls(root)
             if '.git' in files:
                 break
