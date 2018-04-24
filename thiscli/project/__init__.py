@@ -31,6 +31,54 @@ class Project(ABC):
         from . import ansible
         self.can_deploy = ansible.is_present(self)
 
+    # Class/static methods for finding projects
+
+    @classmethod
+    @abstractmethod
+    def find(cls):
+        from .autotools import AutotoolsProject
+        from .meson import MesonProject
+        from .cmake import CMakeProject
+        from .make import MakeProject
+        from .nodejs import NodejsProject
+        from .python import PythonProject
+        from .cargo import CargoProject
+        from .ansible import AnsibleProject
+
+        project = Project.find_one_of(AutotoolsProject,
+                                      MesonProject,
+                                      CMakeProject,
+                                      MakeProject,
+                                      NodejsProject,
+                                      PythonProject,
+                                      CargoProject,
+                                      AnsibleProject)
+
+        if project is None:
+            print("Sorry! I don't recognize your project type")
+            sys.exit(1)
+
+        return project
+
+    @classmethod
+    def find_containing(cls, *filenames):
+        for root, files in walk_up(os.getcwd()):
+            if any(filename in files for filename in filenames):
+                return cls(root)
+            if '.git' in files:
+                break
+        return None
+
+    @staticmethod
+    def find_one_of(*classes):
+        for cls in classes:
+            project = cls.find()
+            if project is not None:
+                return project
+        return None
+
+    # Useful utility methods
+
     def cmd(self, cmd, cwd=None, env=None, echo=True, shell=None):
         if isinstance(cmd, str):
             cmd = cmd.strip()
@@ -103,6 +151,8 @@ class Project(ABC):
     def description(self):
         pass
 
+    # Project actions/commands
+
     def build(self, env):
         fail("Sorry! I don't know how to build your project")
 
@@ -136,50 +186,6 @@ class Project(ABC):
     @property
     def can_check(self):
         return self.has_action('lint') or self.has_action('test')
-
-    @classmethod
-    @abstractmethod
-    def find(cls):
-        from .autotools import AutotoolsProject
-        from .meson import MesonProject
-        from .cmake import CMakeProject
-        from .make import MakeProject
-        from .nodejs import NodejsProject
-        from .python import PythonProject
-        from .cargo import CargoProject
-        from .ansible import AnsibleProject
-
-        project = Project.find_one_of(AutotoolsProject,
-                                      MesonProject,
-                                      CMakeProject,
-                                      MakeProject,
-                                      NodejsProject,
-                                      PythonProject,
-                                      CargoProject,
-                                      AnsibleProject)
-
-        if project is None:
-            print("Sorry! I don't recognize your project type")
-            sys.exit(1)
-
-        return project
-
-    @classmethod
-    def find_containing(cls, *filenames):
-        for root, files in walk_up(os.getcwd()):
-            if any(filename in files for filename in filenames):
-                return cls(root)
-            if '.git' in files:
-                break
-        return None
-
-    @staticmethod
-    def find_one_of(*classes):
-        for cls in classes:
-            project = cls.find()
-            if project is not None:
-                return project
-        return None
 
 
 def format_command(cmd, cwd, env):

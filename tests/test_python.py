@@ -6,12 +6,8 @@ from . import setup_dir, runs_commands
 
 
 @pytest.fixture
-def python_dir(mocker):
+def python_project(mocker):
     setup_dir(mocker, 'setup.py', 'my_package', 'my_package/__init__.py')
-
-
-@pytest.fixture
-def python_project(python_dir):
     return Project.find()
 
 

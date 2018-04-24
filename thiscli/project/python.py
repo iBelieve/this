@@ -98,7 +98,7 @@ class PythonProject(Project):
         if self.has_setup:
             self.cmd('python setup.py build')
         else:
-            super().build()
+            super().build(env)
 
     def test(self):
         if self.has_setup:
@@ -112,7 +112,7 @@ class PythonProject(Project):
         if self.has_setup:
             self.cmd('python setup.py sdist upload')
         else:
-            super().deploy()
+            super().deploy(env)
 
     def lint(self, fix):
         if fix:

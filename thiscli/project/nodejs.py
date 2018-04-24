@@ -110,4 +110,4 @@ class NodejsProject(Project):
         if self.find_script('deploy', env) is not None:
             self.npm_script('deploy', env=env)
         else:
-            super().deploy()
+            super().deploy(env)

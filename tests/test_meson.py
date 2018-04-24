@@ -6,12 +6,8 @@ from . import setup_dir, runs_commands
 
 
 @pytest.fixture
-def meson_dir(mocker):
+def meson_project(mocker):
     setup_dir(mocker, 'meson.build')
-
-
-@pytest.fixture
-def meson_project(meson_dir):
     return Project.find()
 
 
