@@ -47,6 +47,13 @@ class Project(ABC):
         from .ansible import AnsibleProject
         from .dotnet import DotnetCoreProject
 
+        # Make should be below project types that generate a Makefile,
+        # but above other projects to support projects that use a
+        # Makefile wrapper
+        #
+        # Ansible should be last as it could be used in combination
+        # with other project types and is supported as a fallback
+        # deploy target in the base Project implementation
         project = Project.find_one_of(AutotoolsProject,
                                       MesonProject,
                                       CMakeProject,
