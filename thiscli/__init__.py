@@ -1,4 +1,4 @@
-"""Universal do-thingy for running common project tasks"""
+"""Standardized project tool for running common tasks"""
 
 import click
 from .project import Project
