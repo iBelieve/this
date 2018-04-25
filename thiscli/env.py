@@ -26,11 +26,13 @@ def short_env_name(name):
     return env.short if env else name
 
 
-def env_to_release_or_debug(name):
+def env_to_release_or_debug(name, other=False):
     if name in ['release', 'production', 'prod']:
         return 'release'
     elif name in ['debug', 'development', 'dev']:
         return 'debug'
+    elif other:
+        return name
 
     fatal('Unsupport --env value. Please use --release/--debug or ' +
           'one of the equivalent aliases.')

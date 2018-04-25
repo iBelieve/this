@@ -44,8 +44,9 @@ class Project(ABC):
         from .nodejs import NodejsProject
         from .python import PythonProject
         from .cargo import CargoProject
-        from .ansible import AnsibleProject
+        from .gradle import GradleProject
         from .dotnet import DotnetCoreProject
+        from .ansible import AnsibleProject
 
         # Make should be below project types that generate a Makefile,
         # but above other projects to support projects that use a
@@ -61,6 +62,7 @@ class Project(ABC):
                                       NodejsProject,
                                       PythonProject,
                                       CargoProject,
+                                      GradleProject,
                                       DotnetCoreProject,
                                       AnsibleProject)
 
@@ -195,7 +197,8 @@ class Project(ABC):
 
     @property
     def can_check(self):
-        return self.has_action('lint') or self.has_action('test')
+        return (self.check.__func__ != Project.check or
+                self.has_action('lint') or self.has_action('test'))
 
 
 def format_command(cmd, cwd, env):
