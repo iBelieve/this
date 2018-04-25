@@ -110,7 +110,7 @@ class PythonProject(Project):
 
     def deploy(self, env):
         if self.has_setup:
-            self.cmd('python setup.py sdist upload')
+            self.cmd('python setup.py sdist bdist_wheel upload')
         else:
             super().deploy(env)
 
