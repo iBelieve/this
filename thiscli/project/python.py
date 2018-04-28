@@ -51,6 +51,7 @@ class PythonProject(Project):
         super().__init__(cwd)
 
         self.has_setup = self.exists('setup.py')
+        self.has_manage = self.exists('manage.py')
 
         self.packages = [dirname for dirname in os.listdir(cwd)
                          if self.exists(dirname, '__init__.py')]
@@ -66,19 +67,17 @@ class PythonProject(Project):
         else:
             self.env = None
 
-        self.description = 'Python project'
         if self.env:
-            self.description += ' using ' + self.env.description
-
+            self.using.append(self.env.description)
         if self.has_setup:
-            if 'using' in self.description:
-                self.description += ' and setup.py'
-            else:
-                self.description += ' using setup.py'
+            self.using.append('setup.py')
+        if self.has_manage:
+            self.using.append('manage.py')
 
         self.can_build = self.has_setup
         self.can_test = self.has_setup or self.has_package('pytest')
         self.can_deploy = self.has_setup or self.can_deploy
+        self.can_run = self.has_manage
 
     @classmethod
     def find(cls):
@@ -98,6 +97,12 @@ class PythonProject(Project):
             self.cmd('python setup.py build')
         else:
             super().build(env)
+
+    def run(self, env):
+        if self.has_manage:
+            self.cmd('python manage.py runserver')
+        else:
+            super().run(env)
 
     def test(self):
         if self.has_setup:

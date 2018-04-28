@@ -46,3 +46,14 @@ def fatal(message, *args, **kwargs):
 
 def warn(message):
     click.secho('WARNING: ' + message, fg='yellow', bold=True)
+
+
+def oxford_join(phrases):
+    if not phrases:
+        return ""
+    elif len(phrases) == 1:
+        return str(phrases[0])
+    elif len(phrases) == 2:
+        return "{} and {}".format(", ".join(phrases[:-1]), phrases[-1])
+    else:
+        return "{}, and {}".format(", ".join(phrases[:-1]), phrases[-1])

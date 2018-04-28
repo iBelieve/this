@@ -11,9 +11,9 @@ class CMakeProject(Project):
         super().__init__(cwd)
 
         if self.exists('build/Makefile'):
-            self.description += ' using make'
+            self.using.append('make')
         elif self.exists('build/build.ninja'):
-            self.description += ' using ninja'
+            self.using.append('ninja')
 
     @classmethod
     def find(cls):

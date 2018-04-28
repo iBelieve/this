@@ -39,9 +39,9 @@ class NodejsProject(Project):
         self.npm_cmd = get_npm_cmd(self.cwd)
 
         if self.npm_cmd == 'yarn':
-            self.description += 'Node.js project using Yarn'
+            self.using.append('Yarn')
         else:
-            self.description += 'Node.js project using npm'
+            self.using.append('npm')
 
         self.can_build = self.find_script(['build'] + DEV_PROD_NAMES, None) is not None
         self.can_run = self.find_script(['watch', 'start', 'serve'],

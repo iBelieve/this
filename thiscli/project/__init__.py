@@ -7,7 +7,7 @@ import threading
 import fnmatch
 import click
 
-from ..util import walk_up, fail
+from ..util import walk_up, fail, oxford_join
 
 local = threading.local()
 
@@ -29,6 +29,7 @@ class Project(ABC):
         self.cwd = cwd
         self.dry_run = False
         self.description += ' project'
+        self.using = []
 
         from . import ansible
         self.can_deploy = ansible.is_present(self)
@@ -159,6 +160,8 @@ class Project(ABC):
     def info(self):
         from . import ansible
         description = self.description
+        if self.using:
+            description += ' using ' + oxford_join(self.using)
         if self.deploy.__func__ == Project.deploy and ansible.is_present(self):
             description += ' (deployed using Ansible)'
         click.secho(description, fg='blue', bold=True)
