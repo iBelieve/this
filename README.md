@@ -31,6 +31,12 @@ projects. For more advanced commands, use the actual commands that
 
     pip3 install this-cli
 
+For Arch Linux users, `this` is also available from the
+[AUR](https://aur.archlinux.org/packages/this/) and can be installed
+with any AUR helper, such as [yay](https://github.com/Jguer/yay):
+
+    yay -S this
+
 To use on a project, you can directly invoke `this` with one of the commands
 listed below, or run `this` with no arguments to see what project type
 is detected and what subset of the commands are available:
