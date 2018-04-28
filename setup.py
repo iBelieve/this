@@ -6,7 +6,7 @@ with open('README.md') as f:
 
 setup(
     name='this-cli',
-    version='0.2',
+    version='0.3',
     description='Standardized project tool for running common tasks',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -23,7 +23,7 @@ setup(
         'setuptools>=38.6.0',
         'pytest-runner'
     ],
-    tests_require=['pytest'],
+    tests_require=['pytest', 'pytest-mock'],
     entry_points='''
         [console_scripts]
         this=thiscli:cli
