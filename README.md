@@ -16,7 +16,9 @@ specific projects. In addition, `this` will run multiple commands as
 necessary to accomplish a given task. For example, building an
 autotools-based project will run `./autogen.sh`, `./configure`, then
 `make`, while a meson-based project will run `meson` and then `ninja`
-in the build directory.
+in the build directory. `this` even supports projects with multiple
+run commands using `tmux` split panes, such as a Laravel project with
+a PHP backend and an React or Vue frontend.
 
 The goal of `this` is not to provide every possible feature or
 command, but only to wrap a subset of commands common to most
@@ -52,13 +54,20 @@ To see what steps `this` will run for a given command, use the `--dry-run` flag:
 
 ### Supported Project Formats
 
+ - .NET Core
+ - Ansible
  - Autotools
- - Cargo (Rust)
  - CMake
+ - Gradle
+ - Laravel
  - Makefile
  - Meson
  - Node.js
  - Python
+ - Rust/Cargo
+
+You can also run `this --help` to see the latest list of supported
+project types.
 
 ### Supported Commands
 
