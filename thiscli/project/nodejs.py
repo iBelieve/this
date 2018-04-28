@@ -2,7 +2,7 @@ import json
 import os
 
 from . import Project
-from ..env import short_env_name
+from ..env import short_env_name, all_env_names, DEV_PROD_NAMES
 from ..util import needs_update, has_command, warn, fatal
 
 
@@ -43,7 +43,7 @@ class NodejsProject(Project):
         else:
             self.description += ' using npm'
 
-        self.can_build = self.find_script('build', None) is not None
+        self.can_build = self.find_script(['build'] + DEV_PROD_NAMES, None) is not None
         self.can_run = self.find_script(['watch', 'start', 'serve'],
                                         None) is not None
         self.can_test = self.find_script('test', None) is not None
@@ -84,6 +84,9 @@ class NodejsProject(Project):
         args = list(args)
         if args and self.npm_cmd == 'npm':
             args = ['--'] + args
+        if not isinstance(scripts, list):
+            scripts = [scripts]
+
         script = self.find_script(scripts, env)
 
         if script is None:
@@ -92,7 +95,12 @@ class NodejsProject(Project):
         self.npm(['run', script] + args)
 
     def build(self, env):
-        self.npm_script('build', env=env)
+        if env in DEV_PROD_NAMES:
+            self.npm_script(['build'] + all_env_names(env), env=env)
+        elif env is None:
+            self.npm_script(['build', 'dev', 'development'])
+        else:
+            self.npm_script('build', env=env)
 
     def run(self, env):
         self.npm_script(['watch', 'start', 'serve'], env=env)

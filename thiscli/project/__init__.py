@@ -41,6 +41,7 @@ class Project(ABC):
         from .meson import MesonProject
         from .cmake import CMakeProject
         from .make import MakeProject
+        from .laravel import LaravelProject
         from .nodejs import NodejsProject
         from .python import PythonProject
         from .cargo import CargoProject
@@ -52,6 +53,9 @@ class Project(ABC):
         # but above other projects to support projects that use a
         # Makefile wrapper
         #
+        # Laravel needs to go above Node.js as it may also contain an
+        # npm-managed frontend.
+        #
         # Ansible should be last as it could be used in combination
         # with other project types and is supported as a fallback
         # deploy target in the base Project implementation
@@ -59,6 +63,7 @@ class Project(ABC):
                                       MesonProject,
                                       CMakeProject,
                                       MakeProject,
+                                      LaravelProject,
                                       NodejsProject,
                                       PythonProject,
                                       CargoProject,

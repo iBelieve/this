@@ -13,6 +13,7 @@ ENVIRONMENTS = [
 STANDARD_ENV_NAMES = [env.name for env in ENVIRONMENTS]
 SHORT_ENV_NAMES = [env.short for env in ENVIRONMENTS]
 
+DEV_PROD_NAMES = ['dev', 'devleopment', 'prod', 'production']
 
 def get_env(name):
     for env in ENVIRONMENTS:
