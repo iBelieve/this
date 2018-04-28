@@ -2,16 +2,18 @@
 
 import click
 from .project import Project
+from .click_colors import HelpColorsGroup
 
 pass_project = click.make_pass_decorator(Project)
 
 
-@click.group(invoke_without_command=True)
+@click.group(cls=HelpColorsGroup, invoke_without_command=True)
 @click.option('--dry-run', is_flag=True,
-              help='show what commands would be run without ' +
-              'actually running them')
+              help='Show what commands would be run without '
+              'actually running them.')
 @click.pass_context
 def cli(ctx, dry_run):
+    """Standardized project tool for running common tasks"""
     ctx.obj = Project.find()
     ctx.obj.dry_run = dry_run
 
