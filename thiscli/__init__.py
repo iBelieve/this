@@ -6,8 +6,15 @@ from .click_colors import HelpColorsGroup
 
 pass_project = click.make_pass_decorator(Project)
 
+projects_help_section = (
+    'Supported Projects',
+    '\b\n' +
+    '\n'.join([project.description for project in Project.all_projects()])
+)
 
-@click.group(cls=HelpColorsGroup, invoke_without_command=True)
+
+@click.group(cls=HelpColorsGroup, invoke_without_command=True,
+             post_sections=[projects_help_section])
 @click.option('--dry-run', is_flag=True,
               help='Show what commands would be run without '
               'actually running them.')

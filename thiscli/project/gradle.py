@@ -5,7 +5,7 @@ from ..env import env_to_release_or_debug
 
 
 class GradleProject(Project):
-    description = 'Gradle project'
+    description = 'Gradle'
 
     def __init__(self, cwd):
         super().__init__(cwd)

@@ -5,7 +5,7 @@ from ..util import fatal
 
 
 class MakeProject(Project):
-    description = 'Make project'
+    description = 'Makefile'
 
     def __init__(self, cwd):
         super().__init__(cwd)

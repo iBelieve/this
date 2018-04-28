@@ -7,7 +7,7 @@ GENERIC_INVENTORY_FILENAMES = ['ansible/hosts',
 
 
 class AnsibleProject(Project):
-    description = 'Ansible project'
+    description = 'Ansible'
 
     @classmethod
     def find(cls):

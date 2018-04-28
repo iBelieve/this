@@ -3,7 +3,7 @@ from ..env import is_env_release
 
 
 class CargoProject(Project):
-    description = 'Rust project using Cargo'
+    description = 'Rust/Cargo'
 
     @classmethod
     def find(cls):

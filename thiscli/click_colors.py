@@ -23,17 +23,33 @@ class HelpColorsFormatter(click.HelpFormatter):
 
 
 class HelpColorsMixin(object):
+    def __init__(self, post_sections=None, *args, **kwargs):
+        self.post_sections = post_sections or []
+        super().__init__(*args, **kwargs)
+
     def get_help(self, ctx):
         formatter = HelpColorsFormatter(width=ctx.terminal_width,
                                         max_width=ctx.max_content_width)
         self.format_help(ctx, formatter)
         return formatter.getvalue().rstrip('\n')
 
+    def format_help(self, ctx, formatter):
+        self.format_usage(ctx, formatter)
+        self.format_help_text(ctx, formatter)
+        self.format_options(ctx, formatter)
+        self.format_post_sections(ctx, formatter)
+        self.format_epilog(ctx, formatter)
+
     def format_help_text(self, ctx, formatter):
         if self.help:
             formatter.write_paragraph()
             with formatter.indentation():
                 formatter.write_text(click.style(self.help, fg='blue'))
+
+    def format_post_sections(self, ctx, formatter):
+        for title, text in self.post_sections:
+            with formatter.section(title):
+                formatter.write_text(text)
 
 
 class HelpColorsGroup(HelpColorsMixin, click.Group):

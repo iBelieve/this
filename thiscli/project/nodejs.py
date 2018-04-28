@@ -30,7 +30,7 @@ def get_npm_cmd(path):
 
 
 class NodejsProject(Project):
-    description = 'Node.js project'
+    description = 'Node.js'
 
     def __init__(self, cwd):
         super().__init__(cwd)
@@ -39,9 +39,9 @@ class NodejsProject(Project):
         self.npm_cmd = get_npm_cmd(self.cwd)
 
         if self.npm_cmd == 'yarn':
-            self.description += ' using Yarn'
+            self.description += 'Node.js project using Yarn'
         else:
-            self.description += ' using npm'
+            self.description += 'Node.js project using npm'
 
         self.can_build = self.find_script(['build'] + DEV_PROD_NAMES, None) is not None
         self.can_run = self.find_script(['watch', 'start', 'serve'],

@@ -5,7 +5,7 @@ from ..util import has_command, fail
 
 
 class CMakeProject(Project):
-    description = 'CMake project'
+    description = 'CMake'
 
     def __init__(self, cwd):
         super().__init__(cwd)

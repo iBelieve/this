@@ -3,7 +3,7 @@ from ..env import is_env_release
 
 
 class DotnetCoreProject(Project):
-    description = '.NET Core project'
+    description = '.NET Core'
 
     @classmethod
     def find(cls):

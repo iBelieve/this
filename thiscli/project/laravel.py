@@ -5,7 +5,7 @@ from ..tmux import Tmux
 
 
 class LaravelProject(Project):
-    description = 'Laravel project'
+    description = 'Laravel'
 
     def __init__(self, cwd):
         super().__init__(cwd)

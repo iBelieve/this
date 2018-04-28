@@ -28,6 +28,7 @@ class Project(ABC):
     def __init__(self, cwd):
         self.cwd = cwd
         self.dry_run = False
+        self.description += ' project'
 
         from . import ansible
         self.can_deploy = ansible.is_present(self)
@@ -35,8 +36,7 @@ class Project(ABC):
     # Class/static methods for finding projects
 
     @classmethod
-    @abstractmethod
-    def find(cls):
+    def all_projects(cls):
         from .autotools import AutotoolsProject
         from .meson import MesonProject
         from .cmake import CMakeProject
@@ -59,17 +59,22 @@ class Project(ABC):
         # Ansible should be last as it could be used in combination
         # with other project types and is supported as a fallback
         # deploy target in the base Project implementation
-        project = Project.find_one_of(AutotoolsProject,
-                                      MesonProject,
-                                      CMakeProject,
-                                      MakeProject,
-                                      LaravelProject,
-                                      NodejsProject,
-                                      PythonProject,
-                                      CargoProject,
-                                      GradleProject,
-                                      DotnetCoreProject,
-                                      AnsibleProject)
+        return [AutotoolsProject,
+                MesonProject,
+                CMakeProject,
+                MakeProject,
+                LaravelProject,
+                NodejsProject,
+                PythonProject,
+                CargoProject,
+                GradleProject,
+                DotnetCoreProject,
+                AnsibleProject]
+
+    @classmethod
+    @abstractmethod
+    def find(cls):
+        project = Project.find_one_of(*cls.all_projects())
 
         if project is None:
             print("Sorry! I don't recognize your project type")

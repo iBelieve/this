@@ -2,7 +2,7 @@ from . import Project
 
 
 class AutotoolsProject(Project):
-    description = 'Autotools project'
+    description = 'Autotools'
 
     @classmethod
     def find(cls):

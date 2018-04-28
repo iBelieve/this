@@ -4,7 +4,7 @@ from . import Project
 
 
 class MesonProject(Project):
-    description = 'Meson project'
+    description = 'Meson'
 
     @classmethod
     def find(cls):

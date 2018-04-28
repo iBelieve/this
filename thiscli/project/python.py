@@ -45,6 +45,8 @@ class PythonRequirements(PythonEnv):
 
 
 class PythonProject(Project):
+    description = 'Python'
+
     def __init__(self, cwd):
         super().__init__(cwd)
 
@@ -64,6 +66,16 @@ class PythonProject(Project):
         else:
             self.env = None
 
+        self.description = 'Python project'
+        if self.env:
+            self.description += ' using ' + self.env.description
+
+        if self.has_setup:
+            if 'using' in self.description:
+                self.description += ' and setup.py'
+            else:
+                self.description += ' using setup.py'
+
         self.can_build = self.has_setup
         self.can_test = self.has_setup or self.has_package('pytest')
         self.can_deploy = self.has_setup or self.can_deploy
@@ -74,19 +86,6 @@ class PythonProject(Project):
                                    'requirements.txt',
                                    'requirements.in',
                                    'Pipenv')
-
-    @property
-    def description(self):
-        description = 'Python project'
-        if self.env:
-            description += ' using ' + self.env.description
-
-        if self.has_setup:
-            if 'using' in description:
-                description += ' and setup.py'
-            else:
-                description += ' using setup.py'
-        return description
 
     def has_package(self, name):
         if self.env:
