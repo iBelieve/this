@@ -101,11 +101,12 @@ class PythonProject(Project):
     def __init__(self, cwd):
         super().__init__(cwd)
 
-        self.has_setup = self.exists('setup.py')
-        self.has_manage = self.exists('manage.py')
-
         self.packages = [dirname for dirname in os.listdir(cwd)
                          if self.exists(dirname, '__init__.py')]
+        self.non_test_packages = [package for package in self.packages
+                                  if package != 'tests']
+        self.main_package = next((package for package in self.packages
+                                  if self.exists(package + '/__main__.py')), None)
         if not self.packages:
             fatal("No python packages containing __init__.py found")
 
@@ -118,17 +119,20 @@ class PythonProject(Project):
         else:
             self.env = None
 
+        self.has_setup = self.exists('setup.py')
+        self.has_manage = self.exists('manage.py')
+
+        self.can_build = self.has_setup
+        self.can_test = self.has_setup or self.has_package('pytest')
+        self.can_deploy = self.has_setup or self.can_deploy
+        self.can_run = self.has_manage or self.main_package
+
         if self.env:
             self.using.append(self.env.description)
         if self.has_setup:
             self.using.append('setup.py')
         if self.has_manage:
             self.using.append('manage.py')
-
-        self.can_build = self.has_setup
-        self.can_test = self.has_setup or self.has_package('pytest')
-        self.can_deploy = self.has_setup or self.can_deploy
-        self.can_run = self.has_manage
 
     @classmethod
     def find(cls):
@@ -164,6 +168,8 @@ class PythonProject(Project):
         self.ensure_deps()
         if self.has_manage:
             self.env_cmd('python manage.py runserver')
+        elif self.main_package:
+            self.env_cmd('python -m ' + self.main_package)
         else:
             super().run(env)
 
