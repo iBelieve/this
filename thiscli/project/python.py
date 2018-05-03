@@ -2,7 +2,9 @@ from abc import ABC, abstractmethod
 import os
 
 from . import Project, delayed_exit
+from .nodejs import NodejsProject
 from ..util import fatal
+from ..tmux import Tmux
 
 
 class PythonEnv(ABC):
@@ -106,9 +108,16 @@ class PythonProject(Project):
         self.non_test_packages = [package for package in self.packages
                                   if package != 'tests']
         self.main_package = next((package for package in self.packages
-                                  if self.exists(package + '/__main__.py')), None)
+                                  if self.exists(package, '__main__.py')), None)
         if not self.packages:
             fatal("No python packages containing __init__.py found")
+
+        if self.exists('package.json'):
+            self.npm = NodejsProject(cwd)
+        else:
+            self.npm = next((NodejsProject(self.path(dirname))
+                             for dirname in os.listdir(cwd)
+                             if self.exists(dirname, 'package.json')), None)
 
         if self.exists('Pipfile'):
             self.env = PythonPipenv(self)
@@ -165,13 +174,32 @@ class PythonProject(Project):
             super().build(env)
 
     def run(self, env):
-        self.ensure_deps()
-        if self.has_manage:
-            self.env_cmd('python manage.py runserver')
-        elif self.main_package:
-            self.env_cmd('python -m ' + self.main_package)
-        else:
+        can_py_run = self.has_manage or self.main_package
+        can_npm_run = self.npm and self.npm.can_run
+
+        if not can_py_run and not can_npm_run:
             super().run(env)
+            return
+
+        def run_py():
+            self.ensure_deps()
+
+            if self.has_manage:
+                self.env_cmd('python manage.py runserver')
+            elif self.main_package:
+                self.env_cmd('python -m ' + self.main_package)
+
+        if can_py_run and can_npm_run:
+            tmux = Tmux(self.cwd)
+            with tmux.pane():
+                run_py()
+            with tmux.pane():
+                self.npm.run(env)
+            tmux.run()
+        elif can_npm_run:
+            self.npm.run()
+        else:
+            run_py()
 
     def test(self):
         self.ensure_deps()

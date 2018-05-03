@@ -34,7 +34,7 @@ class NodejsProject(Project):
 
     def __init__(self, cwd):
         super().__init__(cwd)
-        with open('package.json') as f:
+        with open(cwd + '/package.json') as f:
             self.package = json.load(f)
         self.npm_cmd = get_npm_cmd(self.cwd)
 
