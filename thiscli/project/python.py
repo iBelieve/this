@@ -6,8 +6,19 @@ from ..util import fatal
 
 
 class PythonEnv(ABC):
+    def __init__(self, project):
+        self.project = project
+
     @abstractmethod
     def has_package(self, name):
+        pass
+
+    @abstractmethod
+    def ensure_deps(self):
+        pass
+
+    @abstractmethod
+    def cmd(self, cmd):
         pass
 
 
@@ -15,30 +26,70 @@ class PythonPipenv(PythonEnv):
     description = 'Pipenv'
 
     def __init__(self, project):
+        super().__init__(project)
         with open(project.path('Pipfile')) as f:
             self.pipfile = f.read()
+
+    def ensure_deps(self):
+        pass
 
     def has_package(self, name):
         return (name + ' = ') in self.pipfile
 
+    def cmd(self, cmd):
+        self.project.cmd('pipenv run ' + cmd)
 
-class PythonPipTools(PythonEnv):
+
+class PythonVirtualenv(PythonEnv):
+    def get_virtualenv(self):
+        if 'VIRTUAL_ENV' in os.environ:
+            return None
+
+        return {'VIRTUAL_ENV': self.project.path('.venv'),
+                'PATH': '{}/bin:{}'.format(self.project.path('.venv'),
+                                           os.environ.get('PATH'))}
+
+    def ensure_deps(self):
+        if not self.project.exists('.venv'):
+            self.project.cmd('virtualenv .venv')
+            self.install_deps()
+
+    @abstractmethod
+    def install_deps():
+        pass
+
+    def cmd(self, cmd):
+        env = self.get_virtualenv()
+        env_echo = '(virtualenv)' if env else ''
+        self.project.cmd(cmd, env=env, env_echo=env_echo)
+
+
+class PythonPipTools(PythonVirtualenv):
     description = 'pip-tools'
 
     def __init__(self, project):
+        super().__init__(project)
         with open(project.path('requirements.in')) as f:
             self.requirements = f.read()
+
+    def install_deps(self):
+        self.cmd('pip install pip-tools')
+        self.cmd('pip-sync')
 
     def has_package(self, name):
         return name in self.requirements
 
 
-class PythonRequirements(PythonEnv):
+class PythonRequirements(PythonVirtualenv):
     description = 'requirements.txt'
 
     def __init__(self, project):
+        super().__init__(project)
         with open(project.path('requirements.txt')) as f:
             self.requirements = f.read()
+
+    def install_deps(self):
+        self.cmd('pip install -r requirements.txt')
 
     def has_package(self, name):
         return name in self.requirements
@@ -86,6 +137,16 @@ class PythonProject(Project):
                                    'requirements.in',
                                    'Pipenv')
 
+    def ensure_deps(self):
+        if self.env:
+            self.env.ensure_deps()
+
+    def env_cmd(self, cmd):
+        if self.env:
+            self.env.cmd(cmd)
+        else:
+            self.cmd(cmd)
+
     def has_package(self, name):
         if self.env:
             return self.env.has_package(name)
@@ -93,37 +154,42 @@ class PythonProject(Project):
             return False
 
     def build(self, env):
+        self.ensure_deps()
         if self.has_setup:
-            self.cmd('python setup.py build')
+            self.env_cmd('python setup.py build')
         else:
             super().build(env)
 
     def run(self, env):
+        self.ensure_deps()
         if self.has_manage:
-            self.cmd('python manage.py runserver')
+            self.env_cmd('python manage.py runserver')
         else:
             super().run(env)
 
     def test(self):
+        self.ensure_deps()
         if self.has_setup:
-            self.cmd('python setup.py test')
+            self.env_cmd('python setup.py test')
         elif self.has_package('pytest'):
-            self.cmd('pytest')
+            self.env_cmd('pytest')
         else:
             super().test()
 
     def deploy(self, env):
+        self.ensure_deps()
         if self.has_setup:
-            self.cmd('python setup.py sdist bdist_wheel upload')
+            self.env_cmd('python setup.py sdist bdist_wheel upload')
         else:
             super().deploy(env)
 
     def lint(self, fix):
+        self.ensure_deps()
         if fix:
-            self.cmd('autopep8 --recursive --in-place ' +
-                     ' '.join(self.packages))
+            self.env_cmd('autopep8 --recursive --in-place ' +
+                         ' '.join(self.packages))
         with delayed_exit():
-            self.cmd('flake8 ' + ' '.join(self.packages))
-            self.cmd('pylint ' + ' '.join(self.packages))
+            self.env_cmd('flake8 ' + ' '.join(self.packages))
+            self.env_cmd('pylint ' + ' '.join(self.packages))
             if self.exists('setup.py'):
-                self.cmd('python setup.py check')
+                self.env_cmd('python setup.py check')

@@ -25,9 +25,10 @@ class Tmux:
     def pane(self):
         commands = []
 
-        def run_command(self, cmd, cwd=None, env=None, echo=True, shell=None):
+        def run_command(self, cmd, cwd=None, env=None, env_echo=None,
+                        echo=True, shell=None):
             from .project import format_command
-            commands.append(format_command(cmd, cwd, env))
+            commands.append(format_command(cmd, cwd, env, env_echo))
 
         with patch.object(Project, 'cmd', new=run_command):
             yield

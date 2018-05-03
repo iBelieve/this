@@ -43,7 +43,8 @@ class NodejsProject(Project):
         else:
             self.using.append('npm')
 
-        self.can_build = self.find_script(['build'] + DEV_PROD_NAMES, None) is not None
+        self.can_build = self.find_script(['build'] + DEV_PROD_NAMES,
+                                          None) is not None
         self.can_run = self.find_script(['watch', 'start', 'serve'],
                                         None) is not None
         self.can_test = self.find_script('test', None) is not None

@@ -1,6 +1,6 @@
 from . import Project
 from .nodejs import NodejsProject
-from ..util import fatal, needs_update
+from ..util import needs_update
 from ..tmux import Tmux
 
 
@@ -15,7 +15,8 @@ class LaravelProject(Project):
             self.npm = None
 
         self.can_build = self.npm and self.npm.can_build
-        self.can_test = self.exists('tests') or (self.npm and self.npm.can_test)
+        self.can_test = (self.exists('tests') or
+                         (self.npm and self.npm.can_test))
         self.can_lint = self.npm and self.npm.can_lint
 
     @classmethod

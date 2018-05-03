@@ -15,6 +15,7 @@ SHORT_ENV_NAMES = [env.short for env in ENVIRONMENTS]
 
 DEV_PROD_NAMES = ['dev', 'devleopment', 'prod', 'production']
 
+
 def get_env(name):
     for env in ENVIRONMENTS:
         if env.name == name or env.short == name or name in env.other:

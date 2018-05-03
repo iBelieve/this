@@ -102,11 +102,11 @@ class Project(ABC):
 
     # Useful utility methods
 
-    def cmd(self, cmd, cwd=None, env=None, echo=True, shell=None):
+    def cmd(self, cmd, cwd=None, env=None, env_echo=None, echo=True, shell=None):
         if isinstance(cmd, str):
             cmd = cmd.strip()
         if echo:
-            echo_command(cmd, cwd, env)
+            echo_command(cmd, cwd, env, env_echo)
         if self.dry_run:
             return
 
@@ -214,10 +214,12 @@ class Project(ABC):
                 self.has_action('lint') or self.has_action('test'))
 
 
-def format_command(cmd, cwd, env):
+def format_command(cmd, cwd, env, env_echo):
     if isinstance(cmd, list):
         cmd = ' '.join(maybe_quote_arg(arg) for arg in cmd)
-    if env is not None:
+    if env_echo:
+        cmd = env_echo + ' ' + cmd
+    elif env:
         cmd = (' '.join(key + '=' + value for key, value in env.items()) +
                ' ' + cmd)
     if cwd is not None:
@@ -225,8 +227,8 @@ def format_command(cmd, cwd, env):
     return cmd
 
 
-def echo_command(cmd, cwd, env):
-    click.secho('$ ' + format_command(cmd, cwd, env),
+def echo_command(cmd, cwd, env, env_echo):
+    click.secho('$ ' + format_command(cmd, cwd, env, env_echo),
                 fg='white', bold=True)
 
 

@@ -9,7 +9,8 @@ class MakeProject(Project):
 
     def __init__(self, cwd):
         super().__init__(cwd)
-        self.targets = subprocess.check_output("make -pRrq : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($1 !~ \"^[#.]\") {print $1}}' | egrep -v '^[^[:alnum:]]'", shell=True, encoding='utf-8').strip().split('\n')
+        self.targets = subprocess.check_output(
+            "make -pRrq : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($1 !~ \"^[#.]\") {print $1}}' | egrep -v '^[^[:alnum:]]'", shell=True, encoding='utf-8').strip().split('\n')
         self.can_test = self.find_target(['test', 'check']) is not None
 
     @classmethod

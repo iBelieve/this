@@ -30,10 +30,11 @@ def runs_commands(*commands):
     commands = list(commands)
     ran_commands = []
 
-    def run_command(self, cmd, cwd=None, env=None, echo=True, shell=None):
+    def run_command(self, cmd, cwd=None, env=None, env_echo=None,
+                    echo=True, shell=None):
         from thiscli.project import format_command, echo_command
-        echo_command(cmd, cwd, env)
-        ran_commands.append(format_command(cmd, cwd, env))
+        echo_command(cmd, cwd, env, env_echo)
+        ran_commands.append(format_command(cmd, cwd, env, env_echo))
 
     with patch.object(Project, 'cmd', new=run_command):
         yield
