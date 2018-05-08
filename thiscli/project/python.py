@@ -52,7 +52,7 @@ class PythonVirtualenv(PythonEnv):
                                            os.environ.get('PATH'))}
 
     def ensure_deps(self):
-        if not self.project.exists('.venv'):
+        if 'VIRTUAL_ENV' not in os.environ and not self.project.exists('.venv'):
             self.project.cmd('virtualenv .venv')
             self.install_deps()
 
@@ -211,8 +211,8 @@ class PythonProject(Project):
             super().test()
 
     def deploy(self, env):
-        self.ensure_deps()
         if self.has_setup:
+            self.ensure_deps()
             self.env_cmd('python setup.py sdist bdist_wheel upload')
         else:
             super().deploy(env)
