@@ -49,4 +49,4 @@ def all_env_names(name):
     if env:
         return set([env.name, env.short, *env.other])
     else:
-        return set(name)
+        return set([name])
