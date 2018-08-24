@@ -130,11 +130,13 @@ class PythonProject(Project):
 
         self.has_setup = self.exists('setup.py')
         self.has_manage = self.exists('manage.py')
+        self.has_flask = self.has_package('flask')
 
         self.can_build = self.has_setup
         self.can_test = self.has_setup or self.has_package('pytest')
         self.can_deploy = self.has_setup or self.can_deploy
-        self.can_run = self.has_manage or self.main_package
+        self.can_run = (self.has_manage or self.main_package or self.has_flask or
+                        (self.npm and self.npm.can_run))
 
         if self.env:
             self.using.append(self.env.description)
@@ -142,13 +144,15 @@ class PythonProject(Project):
             self.using.append('setup.py')
         if self.has_manage:
             self.using.append('manage.py')
+        if not self.has_manage and self.has_flask:
+            self.using.append('Flask')
 
     @classmethod
     def find(cls):
         return cls.find_containing('setup.py',
                                    'requirements.txt',
                                    'requirements.in',
-                                   'Pipenv')
+                                   'Pipfile')
 
     def ensure_deps(self):
         if self.env:
@@ -174,7 +178,7 @@ class PythonProject(Project):
             super().build(env)
 
     def run(self, env):
-        can_py_run = self.has_manage or self.main_package
+        can_py_run = self.has_manage or self.main_package or self.has_flask
         can_npm_run = self.npm and self.npm.can_run
 
         if not can_py_run and not can_npm_run:
@@ -188,6 +192,8 @@ class PythonProject(Project):
                 self.env_cmd('python manage.py runserver')
             elif self.main_package:
                 self.env_cmd('python -m ' + self.main_package)
+            elif self.has_flask:
+                self.env_cmd('flask run')
 
         if can_py_run and can_npm_run:
             tmux = Tmux(self.cwd)
