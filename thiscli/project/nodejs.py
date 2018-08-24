@@ -45,7 +45,7 @@ class NodejsProject(Project):
 
         self.can_build = self.find_script(['build'] + DEV_PROD_NAMES,
                                           None) is not None
-        self.can_run = self.find_script(['watch', 'start', 'serve'],
+        self.can_run = self.find_script(['server', 'watch', 'start', 'serve'],
                                         None) is not None
         self.can_test = self.find_script('test', None) is not None
         self.can_lint = self.find_script('lint', None) is not None
@@ -104,7 +104,7 @@ class NodejsProject(Project):
             self.npm_script('build', env=env)
 
     def run(self, env):
-        self.npm_script(['watch', 'start', 'serve'], env=env)
+        self.npm_script(['server', 'watch', 'start', 'serve'], env=env)
 
     def test(self):
         self.npm_script('test')
